@@ -1,0 +1,8 @@
+server1 ansible_host=172.16.65.107 ansible_port=22 ansible_user=root ansible_ssh_private_key_file=~/path/to/ssh/key
+
+; [database]
+; server2 ansible_host=172.16.65.108 ansible_port=22 ansible_user=root ansible_ssh_private_key_file=~/path/to/ssh/key
+
+; [web-server]
+; server3 ansible_host=192.168.80.124 ansible_port=22 ansible_user=root
+; server4 ansible_host=192.168.80.125 ansible_port=22 ansible_user=root

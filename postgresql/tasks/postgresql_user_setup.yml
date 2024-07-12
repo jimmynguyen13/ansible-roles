@@ -1,0 +1,55 @@
+---
+- hosts: database
+  become: yes
+  tasks:
+    - name: Ensure the PostgreSQL database is present
+      community.postgresql.postgresql_db:
+        name: testdb
+        state: present
+
+    - name: Create a PostgreSQL user
+      community.postgresql.postgresql_user:
+        db: testdb
+        name: thinhnp
+        password: "123456"
+        priv: "ALL"
+
+    - name: Grant USAGE on schema public to the user
+      community.postgresql.postgresql_privs:
+        db: testdb
+        type: schema
+        privs: USAGE,CREATE
+        objs: public
+        role: thinhnp
+
+    - name: Grant all privileges on the database to the user
+      community.postgresql.postgresql_privs:
+        db: testdb
+        type: database
+        privs: ALL
+        objs: testdb
+        role: thinhnp
+
+    - name: Grant CREATEDB privilege to the user
+      community.postgresql.postgresql_user:
+        name: thinhnp
+        password: "123456"
+        role_attr_flags: CREATEDB
+
+    - name: Grant SELECT, INSERT, UPDATE, DELETE on table to user
+      community.postgresql.postgresql_privs:
+        db: testdb
+        type: table
+        privs: SELECT,INSERT,UPDATE,DELETE
+        objs: cars
+        role: thinhnp
+
+    # - name: Revoke privilege on the table from the user
+    #   community.postgresql.postgresql_privs:
+    #     db: testdb
+    #     type: table
+    #     privs: INSERT
+    #     objs: cars
+    #     role: thinhnp
+    #     state: absent
+

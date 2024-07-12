@@ -1,0 +1,52 @@
+---
+# tasks file for docker
+- name: Install required packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg-agent
+    - software-properties-common
+    - unzip
+
+- name: Download and install Docker GPG key
+  become: true
+  tasks:
+    - name: Download Docker GPG key
+      uri:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /tmp/docker-archive-keyring.gpg
+        mode: 0644
+        status_code: 200, 201, 304
+    - name: Import Docker GPG key
+      command: gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg /tmp/docker-archive-keyring.gpg
+      args:
+        chdir: /tmp
+
+- name: Add Docker repository
+  apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+    state: present
+
+- name: Install Docker
+  apt:
+    name: docker-ce
+    state: present
+
+- name: Add user to docker group
+  user:
+    name: "root"
+    groups: docker
+    append: yes
+
+- name: Download Docker Compose
+  get_url:
+    url: https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: "a+x"
+
+- name: Access Permission
+  command: chmod +x /usr/local/bin/docker-compose
