@@ -1,7 +1,20 @@
 ---
-- name: Install and config any services
+# Install any services that you want
+- name: Install docker loki
   hosts: server1
   become: true
   roles:
     - docker
+    - loki_stack
+
+- name: Setup PostgreSQL
+  hosts: database
+  become: true
+  vars_files:
+    - vars/main.yml
+  roles:
     - postgresql
+  # tasks:
+  #   - name: Show variable from vars file
+  #     debug:
+  #       msg: "{{ my_var }}"
